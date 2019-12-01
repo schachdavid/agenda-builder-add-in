@@ -1,0 +1,41 @@
+.container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form {
+    box-sizing: border-box;
+    padding: 0.5rem;
+    max-width: 15rem;
+}
+
+
+.headings {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    width: 100%;
+    background-color: #038287dc;
+}
+
+
+h1 {
+    font-weight: 400;
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+h2 {
+    margin-bottom: 0;
+    font-weight: 300;
+    font-size: 1.2rem;
+}
+
+.button {
+    margin-top: 1rem;
+}

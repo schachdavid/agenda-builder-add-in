@@ -1,0 +1,10 @@
+ //save inside table
+ const tableElements = el.querySelectorAll('table');
+                tableElements.forEach(tableElement => {
+                    if (tableElement.innerHTML.includes('agendaData_start')) {
+                        var tmpEl = document.createElement('div');
+                        tmpEl.innerHTML = table;
+                        tableElement.parentElement.replaceChild(tmpEl.firstChild, tableElement)
+                        tableElement.innerHTML = table;
+                    }
+                })
