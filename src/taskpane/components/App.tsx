@@ -2,7 +2,7 @@ import * as React from "react";
 import { initializeIcons } from '@uifabric/icons';
 import { IAgendaJSON } from "react-event-agenda/dist/models/AgendaModel";
 import {AddIn} from './AddIn/AddIn'
-import { CreateScreen } from "./CreateScreen/CreateScreen";
+import { InitialScreen } from "./InitialScreen/InitialScreen";
 import { Customizer } from 'office-ui-fabric-react';
 import { createTheme } from 'office-ui-fabric-react';
 import { palette } from "../colorPalette";
@@ -24,7 +24,11 @@ export default class App extends React.Component<AppProps, AppState> {
     initializeIcons();
   }
 
+  
+
   render() {
+    if (!Office.context || !Office.context.mailbox || !Office.context.mailbox.item || !Office.context.mailbox.item.body) return null;
+    
     return (
       <Customizer settings={{
         theme: createTheme({

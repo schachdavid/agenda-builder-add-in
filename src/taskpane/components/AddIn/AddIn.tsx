@@ -1,11 +1,13 @@
 import * as React from "react";
-import Agenda, { AgendaViewModel } from 'react-event-agenda'
+import { AgendaViewModel } from 'react-event-agenda'
 import * as styles from './AddIn.module.css';
-import { IAgendaJSON } from 'react-event-agenda/dist/models/AgendaModel';
+import { IAgendaJSON, Agenda } from 'react-event-agenda/dist/models/AgendaModel';
 import moment = require("react-event-agenda/node_modules/moment");
-import { CreateScreen } from "../CreateScreen/CreateScreen";
+import { InitialScreen } from "../InitialScreen/InitialScreen";
 import uuid = require("uuid");
 import { IDayJSON } from "react-event-agenda/dist/models/DayModel";
+import { AddInAgenda } from "../AddInAgenda/AddInAgenda";
+import { replaceLast } from "../../../util"
 
 
 
@@ -18,11 +20,28 @@ interface IProps {
 
 export const AddIn: React.FC<IProps> = ({
 }: IProps) => {
+    const [isReady, setIsReady] = React.useState(false);
+    const [agendaViewModel, setAgendaViewModel] = React.useState(undefined);
 
-    const [agendaInitialized, setAgendaInitialized] = React.useState(false);
-
-
-
+    React.useEffect(() => {
+        Office.context.mailbox.item.body.getAsync(
+            "html",
+            function callback(result) {
+                const matches = /agendaData_start([\s\S]*)agendaData_end/.exec(result.value);
+                if (matches && matches.length > 0) {
+                    let match = matches[0];
+                    match = match.replace(/(agendaData_end|agendaData_start)*/g, '');
+                    //replace quot
+                    match = match.replace(/&quot;/g, '"');
+                    //remove line breaks
+                    match = match.replace(/\r?\n|\r/g, ' ');
+                    console.log(match);
+                    setAgendaViewModel(new AgendaViewModel(JSON.parse(match), handleDataChange));
+                }
+                setIsReady(true);
+            }
+        );
+    }, [])
 
 
     const getTable = (day: IDayJSON, oldBody?: string) => {
@@ -43,7 +62,7 @@ export const AddIn: React.FC<IProps> = ({
         day.tracks[0].items.forEach(item => {
             table = table + `<tr style='height:10.6pt'> 
                 ${tdOpeningTagTime}<p class=MsoNormal>${moment(item.start).format("HH:mm")} - ${moment(item.end).format("HH:mm")}</p></td>
-                ${tdOpeningTagTitle}  <p class=MsoNormal><b>${item.title ? item.title : ''}</b></p></td>
+                ${tdOpeningTagTitle}  <p class=MsoNormal><b>${item.title ? item.title : ''}</b>${item.description ? `<br/>${item.description}` : ''}</p></td>
                 ${tdOpeningTagSpeaker}<p class=MsoNormal> ${item.speaker ? item.speaker : ''}</p></td>
               </tr>`;
         });
@@ -77,11 +96,9 @@ export const AddIn: React.FC<IProps> = ({
             Office.CoercionType.Html,
             async (result) => {
                 console.log("ending");
-                console.log(result.value);
 
                 let newItemBody = result.value;
                 let jsonString = JSON.stringify(data);
-                console.log(jsonString);
                 const newDataString = 'agendaData_start' + JSON.stringify(data) + 'agendaData_end';
                 newItemBody = newItemBody.replace(/agendaData_start([\s\S]*)agendaData_end/, newDataString)
                 const tables = data.days.map(day => getTable(day, result.value))
@@ -89,15 +106,30 @@ export const AddIn: React.FC<IProps> = ({
                 var el = document.createElement('html');
                 el.innerHTML = newItemBody;
                 const tableElements = el.querySelectorAll('table');
+                let parentElement: HTMLElement;
                 tableElements.forEach(tableElement => {
-                    if (tableElement.innerHTML.includes('Topic') && tableElement.innerHTML.includes('Speaker') && tables.length > 0) {
-                        var tmpEl = document.createElement('div');
-                        tmpEl.innerHTML = tables.shift();
-                        tableElement.parentElement.replaceChild(tmpEl.firstElementChild, tableElement);
+                    if (tableElement.innerHTML.includes('Topic') && tableElement.innerHTML.includes('Speaker')) {
+                        let tmpEl = document.createElement('div');
+                        let renderedTable = tables.shift();
+                        tmpEl.innerHTML = renderedTable;
+                        if (renderedTable) {
+                            tableElement.parentElement.replaceChild(tmpEl.children[0], tableElement);
+                            parentElement = tableElement.parentElement;
+                        } //delete tables of non existing days
+                        else tableElement.parentElement.removeChild(tableElement);
                     }
                 })
-                console.log(el.innerHTML);
 
+                //case new days were added, add tables
+                while (tables.length > 0) {
+                    let tmpEl = document.createElement('div');
+                    tmpEl.innerHTML = tables.shift();
+                }
+
+
+                //remove added line break
+                el.innerHTML = replaceLast('<p class="MsoNormal">&nbsp;</p>', '', el.innerHTML);
+                console.log(el.innerHTML);
 
                 Office.context.mailbox.item.body.setAsync(
                     el.innerHTML,
@@ -106,65 +138,31 @@ export const AddIn: React.FC<IProps> = ({
                         asyncContext: "This is passed to the callback"
                     }
                 );
+
             }
         );
     };
 
 
-    // const handleDataChange = async (data: IAgendaJSON) => {
-    //     Office.context.mailbox.item.body.setAsync(
-    //         getTable(data),
+
+    // const agendaViewModel = new AgendaViewModel({
+    //     id: "f4159afc-ca9b-452b-9779-b2fb0289d5ac ",
+    //     days: [
     //         {
-    //             coercionType: Office.CoercionType.Html,
-    //             asyncContext: "This is passed to the callback"
+    //             id: "49982ca2-95b7-4c5e-b0c2-bbe51465736e",
+    //             startTime: "2013-02-08T07:00:00.000Z",
+    //             endTime: "2013-02-08T16:30:00.000Z",
+    //             tracks: [
+    //                 {
+    //                     id: "dba5df09-95b7-43aa-bae8-8d670a696417",
+    //                     name: "",
+    //                     items: []
+    //                 }
+    //             ]
     //         }
-    //     );
-    // };
+    //     ]
+    // }, handleDataChange);
 
-
-
-
-
-
-    const agendaViewModel = new AgendaViewModel({
-        id: "f4159afc-ca9b-452b-9779-b2fb0289d5ac ",
-        days: [
-            {
-                id: "49982ca2-95b7-4c5e-b0c2-bbe51465736e",
-                startTime: "2013-02-08T07:00:00.000Z",
-                endTime: "2013-02-08T16:30:00.000Z",
-                tracks: [
-                    {
-                        id: "dba5df09-95b7-43aa-bae8-8d670a696417",
-                        name: "",
-                        items: []
-                    }
-                ]
-            }
-        ]
-    }, handleDataChange);
-
-
-
-    if (!Office.context || !Office.context.mailbox || !Office.context.mailbox.item || !Office.context.mailbox.item.body) return null;
-
-    Office.context.mailbox.item.body.getAsync(
-        "html",
-        function callback(result) {
-            const matches = /agendaData_start([\s\S]*)agendaData_end/.exec(result.value);
-            if (matches && matches.length > 0) {
-                setAgendaInitialized(true);
-                let match = matches[0];
-                match = match.replace(/(agendaData_end|agendaData_start)*/g, '');
-                //replace quot
-                match = match.replace(/&quot;/g, '"');
-                //remove line breaks
-                match = match.replace(/\r?\n|\r/g, ' ');
-                console.log(match);
-                agendaViewModel.setData(JSON.parse(match));
-            }
-        }
-    );
 
     const initializeAgenda = (startDate: Date, endDate: Date) => {
         //case no agenda data found
@@ -173,9 +171,9 @@ export const AddIn: React.FC<IProps> = ({
             days: []
         }
 
+        const days = data.days;
         const start = moment(startDate).set('hours', 0).set('minutes', 1);
         const end = moment(endDate).set('hours', 0).set('minutes', 1);
-
 
         if (!end.isSameOrAfter(start)) throw new Error('startDate should be Before or equal endDate');
 
@@ -185,8 +183,7 @@ export const AddIn: React.FC<IProps> = ({
         for (let i = 0; i < numberOfDays; i++) {
             const dayStartTime = moment(currentDay).set('hours', 8).set('minutes', 0);
             const dayEndTime = moment(currentDay).set('hours', 19).set('minutes', 0);
-
-            data.days.push({
+            days.push({
                 id: uuid(),
                 startTime: dayStartTime.toString(),
                 endTime: dayEndTime.toString(),
@@ -208,17 +205,23 @@ export const AddIn: React.FC<IProps> = ({
             currentDay.add('day', 1);
         }
 
+        setAgendaViewModel(new AgendaViewModel({
+            id: uuid(),
+            days: days
+        }, handleDataChange));
 
-
-        agendaViewModel.setData(data);
         let agendaEmailBody = '';
-        data.days.forEach(day => agendaEmailBody = agendaEmailBody + getTable(day));
+        if (days.length > 0) agendaEmailBody = agendaEmailBody + getTable(days[0]);
+        for (let i = 1; i < days.length; i++) {
+            agendaEmailBody = ` ${agendaEmailBody} 
+            <br/>
+            ${getTable(days[i])}`;
+        }
         agendaEmailBody = `
         <span lang=EN-US style='font-size:8.0pt;color:#D0CECE'>***do not delete or edit after this line***</span><span lang=EN-US> </span>
         <span style='display:none; font-size: 1pt; color: white;'>agendaData_start ${JSON.stringify(data)} agendaData_end</span>
         ${agendaEmailBody}
         <span lang=EN-US style='font-size:8.0pt;color:#D0CECE'>***do not delete or edit before this line – this agenda has been built with the Agenda Builder Outlook Add-In***</span>`
-        console.log(agendaEmailBody);
 
         Office.context.mailbox.item.body.setSelectedDataAsync(
             agendaEmailBody,
@@ -226,9 +229,8 @@ export const AddIn: React.FC<IProps> = ({
                 coercionType: Office.CoercionType.Html,
             }
         );
-        setAgendaInitialized(true)
-
     }
+
 
 
 
@@ -236,14 +238,11 @@ export const AddIn: React.FC<IProps> = ({
 
     return (
         <>
-            {
-                agendaInitialized ?
-                    <div style={{ height: '100vh', width: '100vw', maxWidth: '100%' }}>
-                        <Agenda agendaViewModel={agendaViewModel}></Agenda>
-                    </div> :
-                    <CreateScreen initializeAgenda={initializeAgenda}></CreateScreen>
+            {!isReady ? null :
+                agendaViewModel !== undefined ?
+                    <AddInAgenda agendaViewModel={agendaViewModel}></AddInAgenda> :
+                    <InitialScreen initializeAgenda={initializeAgenda}></InitialScreen>
             }
-
         </>
     )
 };

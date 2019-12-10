@@ -1,0 +1,66 @@
+.container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(243, 243, 243);
+}
+
+.form {
+    box-sizing: border-box;
+    width: 17rem;
+    background-color: white;
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+}
+
+.headings {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    width: 100%;
+    color: #038287;
+    color: black;
+    height: 6rem;
+    margin-bottom: 1rem;
+}
+
+.headings>div {
+    margin-left: 1rem;
+}
+
+h1 {
+    font-weight: 400;
+    font-size: 1.5rem;
+    color: #038287;
+    margin: 0;
+}
+
+h2 {
+    margin: 0;
+    font-weight: 300;
+    font-size: 1.5rem;
+    color: #038287;
+}
+
+.logo {
+    width: 4rem;
+    height: 4rem;
+}
+
+.instructions {
+    font-size: 0.9rem;
+    color: rgb(177, 177, 177);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+
+}
+
+.button {
+    margin-top: 1rem;
+    width: 100%;
+}

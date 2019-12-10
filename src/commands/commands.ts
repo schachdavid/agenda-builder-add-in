@@ -63,7 +63,8 @@ const g = getGlobal() as any;
 //   });
 // }
 
-// var settingsDialog;
+let btnEvent;
+var config;
 
 function insertDefaultGist(event) {
   // Office.context.document.setSelectedDataAsync("ExecuteFunction works. Button ID=" + event.source.id,
@@ -76,10 +77,30 @@ function insertDefaultGist(event) {
   //       // Show success message.
   //     }
   //   });
-    Office.context.ui.displayDialogAsync('https://localhost:3000/dialog.html', {height: 90, width: 60, displayInIframe: true})
+  btnEvent = event;
+  Office.onReady(() =>  Office.context.ui.displayDialogAsync('https://localhost:3000/dialog.html', {height: 90, width: 60, displayInIframe: true}, function(result) {
+    let settingsDialog = result.value;
+    // settingsDialog.close()
+    // settingsDialog.addEventHandler(Office.EventType.DialogMessageReceived, receiveMessage);
+    settingsDialog.addEventHandler(Office.EventType.DialogEventReceived, dialogClosed);
+  }))
   // Office.context.ui.displayDialogAsync('https://localhost:3000/taskpane.html', {height: 80, width: 80, displayInIframe: false});
-  console.log("inserting deafult....");
-  event.completed();
+  // event.completed();
+}
+
+// function receiveMessage(message) {
+//   config = JSON.parse(message.message);
+//   setConfig(config, function(result) {
+//     settingsDialog.close();
+//     settingsDialog = null;
+//     btnEvent.completed();
+//     btnEvent = null;
+//   });
+// }
+
+function dialogClosed(message) {
+  btnEvent.completed();
+  btnEvent = null;
 }
 
 

@@ -38,7 +38,8 @@ module.exports = async (env, options) => {
                 modules: true,
                 namedExport: true
               }
-            }
+            },
+            'postcss-loader'
           ]
         },
         {

@@ -1,0 +1,18 @@
+.item {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    user-select: none;
+}
+
+.item:hover {
+    cursor: pointer;
+    color: rgb(66, 66, 66);
+}
+
+.itemContent {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
