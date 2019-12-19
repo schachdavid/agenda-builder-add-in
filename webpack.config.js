@@ -13,8 +13,6 @@ module.exports = async (env, options) => {
     entry: {
       vendor: ["react", "react-dom", "core-js"],
       taskpane: ["react-hot-loader/patch", "./src/taskpane/index.tsx"],
-      dialog: ["react-hot-loader/patch", "./src/dialog/index.tsx"],
-      commands: "./src/commands/commands.ts"
     },
     resolve: {
       extensions: [".ts", ".tsx", ".html", ".js", ".css"],
@@ -64,7 +62,7 @@ module.exports = async (env, options) => {
               name: "assets/[name].[ext]"
             }
           }
-        }
+        },
       ]
     },
     plugins: [
@@ -89,19 +87,9 @@ module.exports = async (env, options) => {
       ]),
       new ExtractTextPlugin("[name].[hash].css"),
       new HtmlWebpackPlugin({
-        filename: "dialog.html",
-        template: "./src/dialog/dialog.html",
-        chunks: ["dialog", "vendor", "polyfills"]
-      }),
-      new HtmlWebpackPlugin({
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
         chunks: ["taskpane", "vendor", "polyfills"]
-      }),
-      new HtmlWebpackPlugin({
-        filename: "commands.html",
-        template: "./src/commands/commands.html",
-        chunks: ["commands"]
       }),
       new CopyWebpackPlugin([
         {

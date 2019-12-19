@@ -5,6 +5,7 @@ import { ICommandBarItemProps } from "office-ui-fabric-react/lib/CommandBar";
 import { DeletedDaysWarning } from '../DeletedDaysWarning/DeletedDaysWarning';
 import moment = require("react-event-agenda/node_modules/moment");
 import * as styles from './AddInAgenda.module.css';
+import uuid = require("uuid");
 
 
 
@@ -48,9 +49,27 @@ export const AddInAgenda: React.FC<IProps> = ({
             for (let i = 0; i < numberToDelete && days.length - 1 - i > 0; i++) {
                 agendaViewModel.deleteDay(days[days.length - 1 - i].id);
             }
+            console.log(agendaViewModel.getDays());
             setDeletedDaysWarningHidden(false);
         } else if (newDiffDays > oldDiffDays) {
             //add days
+            const numberToAdd = newDiffDays - oldDiffDays;
+            let day = moment(momentOldEnd).add(1, "day");
+            for (let i = 0; i < numberToAdd; i++) {
+                agendaViewModel.addDay({
+                    id: uuid(),
+                    startTime: day.toString(),
+                    endTime: day.toString(),
+                    uiHidden: true,
+                    tracks: [{
+                        id: uuid(),
+                        name: "",
+                        items: []
+                    }
+                    ]
+                });
+                day.add(1, "day");
+            }
         }
         const startDateDiffDays = Math.ceil(momentNewStart.diff(momentOldStart, 'days', true));
         if (startDateDiffDays !== 0) agendaViewModel.addDaysToAllDates(startDateDiffDays);

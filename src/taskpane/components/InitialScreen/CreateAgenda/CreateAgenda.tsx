@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as styles from './CreateAgenda.module.css';
-import { PrimaryButton } from 'office-ui-fabric-react';
+import { PrimaryButton, Checkbox } from 'office-ui-fabric-react';
 import { DateRangePicker } from "../../RangePicker/DateRangePicker";
 
 
@@ -18,6 +18,7 @@ export const CreateAgenda: React.FC<IProps> = ({ initializeAgenda }: IProps) => 
     const [startDate, setStartDate] = React.useState(new Date());
     const [endDate, setEndDate] = React.useState(new Date());
     const [rangeIsValid, setRangeIsValid] = React.useState(true);
+    const [showInstructions, setShowInstructions] = React.useState(true);
 
 
 
@@ -33,6 +34,12 @@ export const CreateAgenda: React.FC<IProps> = ({ initializeAgenda }: IProps) => 
                 endDate={endDate}
                 setEndDate={(date: Date) => setEndDate(date)}
             />
+            <Checkbox 
+            className={styles.checkBox}
+            label="Show instructions" 
+            checked={showInstructions} 
+            onChange={() => setShowInstructions(!showInstructions)} />
+
             <PrimaryButton disabled={!rangeIsValid} text="Create Agenda" onClick={() => initializeAgenda(startDate, endDate)} className={styles.button} />
 
         </>

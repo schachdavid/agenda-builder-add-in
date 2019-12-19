@@ -1,6 +1,4 @@
 
-
-
 /**
  * Replaces the last occurrence of the given string
  * 

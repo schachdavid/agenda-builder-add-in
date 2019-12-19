@@ -4,33 +4,23 @@ import { Collapsible } from "./Collapsible/Collapsible";
 const logo = require("../../../../assets/logo-filled.png")
 
 import { CreateAgenda } from './CreateAgenda/CreateAgenda'
+import { LoadAgenda } from "./LoadAgenda/LoadAgenda";
 
 
 
 
 
 interface IProps {
-    initializeAgenda: (startDate: Date, endDate: Date) => void
+    initializeAgenda: (startDate: Date, endDate: Date) => void,
+    checkForData: () => void
 }
 
-export const InitialScreen: React.FC<IProps> = ({ initializeAgenda
+export const InitialScreen: React.FC<IProps> = ({
+     initializeAgenda,
+     checkForData
 }: IProps) => {
 
 
-
-
-    const loadAgenda = <>
-        <div className={styles.instructions}>
-            The agenda data is saved together with the exported table inside the email. To load or duplicate an agenda:
-            <ol>
-                <li> Open the old email.</li>
-                <li> Copy the whole agenda table including the info tags.</li>
-                <li> Paste it into this email.</li>
-                <li> Reload the add-in.</li>
-
-            </ol>
-        </div>
-    </>
 
 
 
@@ -55,9 +45,8 @@ export const InitialScreen: React.FC<IProps> = ({ initializeAgenda
                 </div>
                
                 <Collapsible item={{ name: "Load Agenda", collapsed: false }}>
-                    {loadAgenda}
+                    <LoadAgenda checkForData={checkForData}/>
                 </Collapsible>
-
             </div>
         </div>
     )

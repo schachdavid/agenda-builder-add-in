@@ -1,0 +1,29 @@
+.instructions {
+    font-size: 0.9rem;
+    color: rgb(177, 177, 177);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+
+}
+
+.button {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.warning {
+    font-size: 0.75rem;
+    color: rgb(170, 0, 0);
+    display: flex;
+    align-items: center;
+}
+
+.warning span {
+    margin-left: 0.5rem;
+}
+
+ol {
+    font-size: 0.9rem;
+    color: rgb(71, 71, 71);
+}
+

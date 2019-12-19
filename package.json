@@ -16,6 +16,7 @@
         "build-dev": "webpack --mode development",
         "dev-server": "webpack-dev-server --mode development",
         "start": "office-addin-debugging start manifest.xml",
+        "start:mac": "webpack-dev-server --mode development",
         "start:desktop": "office-addin-debugging start manifest.xml desktop",
         "start:web": "office-addin-debugging start manifest.xml web",
         "stop": "office-addin-debugging stop manifest.xml",
