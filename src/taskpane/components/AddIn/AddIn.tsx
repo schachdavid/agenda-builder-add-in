@@ -51,8 +51,11 @@ export const AddIn: React.FC<IProps> = ({
         let newItemBody = result.value;
         const newDataString = 'agendaData_start' + JSON.stringify(data) + 'agendaData_end';
         newItemBody = newItemBody.replace(/agendaData_start([\s\S]*)agendaData_end/, newDataString)
+
+        //create new tables
         const tables = data.days.map(day => getTable(day, result.value))
 
+        //replace old
         var el = document.createElement('html');
         el.innerHTML = newItemBody;
         const tableElements = el.querySelectorAll('table');
@@ -154,7 +157,7 @@ export const AddIn: React.FC<IProps> = ({
             // 👋 Hi there, you just created an agenda<br>
             // The changes you are making using the Agenda Builder are reflected in the table below immediately and will be auto saved into this email.<br>
             // Do not try to edit the table's content directly.<br>
-            // However you can style the table to your liking.<br>
+            // However you can style and format the table and its content to your liking.<br>
             // </span>
             `
         <span lang=EN-US style='font-size:8.0pt;color:#b8b8b8'>***do not delete or edit after this line***</span><span lang=EN-US> </span>

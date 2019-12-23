@@ -8,45 +8,111 @@ import { IDayJSON } from "react-event-agenda/dist/models/DayModel";
  * @param {string} oldBody - old html body to keep styling
  * @return {string} table as a html string
  */
-export const getTable = (day: IDayJSON, oldBody?: string): string => {
+export const getTable = (dayData: IDayJSON, oldBody?: string): string => {
     let table = '';
-    //     const thOpeningTagMatches = newItemBody.match(/<th([\s\S]*?)>/)
-    //     const thOpeningTag = thOpeningTagMatches ? thOpeningTagMatches[0] : '<th>'
-    //     table = `<tr>
-    //     ${thOpeningTag} Time</th>
-    //     ${thOpeningTag} Topic</th>
-    //     ${thOpeningTag} Speaker</th>
-    //   </tr>`;
-    const tdOpeningTagMatches = oldBody ? oldBody.match(/<td([\s\S]*?)>/) : undefined;
-    const tdOpeningTagTime = tdOpeningTagMatches && tdOpeningTagMatches.length > 0 && false ? tdOpeningTagMatches[0] : `<td width=160 valign=top style='width:120pt;border:none;border-bottom:solid #C9C9C9 1.0pt; padding:0cm 5.4pt 0cm 5.4pt;height:10.05pt'>`;
-    const tdOpeningTagTitle = tdOpeningTagMatches && tdOpeningTagMatches.length > 1 && false ? tdOpeningTagMatches[1] : `<td width=268 valign=top style='width:200pt;border:none;border-bottom:solid #C9C9C9 1.0pt; padding:0cm 5.4pt 0cm 5.4pt;height:10.05pt'>`;
-    const tdOpeningTagSpeaker = tdOpeningTagMatches && tdOpeningTagMatches.length > 2 && false ? tdOpeningTagMatches[2] : `<td width=186 valign=top style='width:140pt;border:none;border-bottom:solid #C9C9C9 1.0pt; padding:0cm 5.4pt 0cm 5.4pt;height:10.05pt'>`;
+
+    const tableCells = oldBody ? oldBody.match(/<td[\s\S]*?<\/td>/g) : undefined;
+    //Remove non agenda table cells which are before the agenda tables
+
+    for(let i = 0; i < tableCells.length - 1 && !tableCells[i+1].includes('Topic');) {
+        tableCells.shift();
+    }
 
 
-    day.tracks[0].items.forEach(item => {
+    //generate table rows
+    dayData.tracks[0].items.forEach(item => {
+        const time = `${moment(item.start).format("HH:mm")} - ${moment(item.end).format("HH:mm")}`;
+        const titleAndDescription = `<b>${item.title ? item.title : ''}</b>${item.description ? `<br/>${item.description}` : ''}`;
+        const speaker = item.speaker ? item.speaker : '';
+        //create table data cells
+        const tdTime = !oldBody ? getInitialTimeTdStyle(time) : replaceChildrenOfFirstNodeWithTextNode(tableCells[3], time);
+        const tdTopic = !oldBody ? getInitialTitleAndDescriptionTdStyle(titleAndDescription) : replaceChildrenOfFirstNodeWithTextNode(tableCells[4], titleAndDescription);
+        const tdSpeaker = !oldBody ? getInitialSpeakerTdStyle(speaker) : replaceChildrenOfFirstNodeWithTextNode(tableCells[5], speaker);
+
+        //put table row together
         table = table + `<tr style='height:10.6pt'> 
-            ${tdOpeningTagTime}<p class=MsoNormal>${moment(item.start).format("HH:mm")} - ${moment(item.end).format("HH:mm")}</p></td>
-            ${tdOpeningTagTitle}  <p class=MsoNormal><b>${item.title ? item.title : ''}</b>${item.description ? `<br/>${item.description}` : ''}</p></td>
-            ${tdOpeningTagSpeaker}<p class=MsoNormal> ${item.speaker ? item.speaker : ''}</p></td>
-          </tr>`;
+        ${tdTime}
+        ${tdTopic}
+        ${tdSpeaker}
+      </tr>`;
     });
 
+    //generate table header data cells
+    const day = moment(dayData.startTime).format('ddd, MMM D');
+    const tdDayHeader = !oldBody ? getInitialDayHeaderTdStyle(day) : replaceChildrenOfFirstNodeWithTextNode(tableCells[0], day);
+    const tdTopicHeader = !oldBody ? getInitialTopicHeaderTdStyle() : replaceChildrenOfFirstNodeWithTextNode(tableCells[1], 'Topic');
+    const tdSpeakerHeader = !oldBody ? getInitialSpeakerHeaderTdStyle() : replaceChildrenOfFirstNodeWithTextNode(tableCells[2], 'Speaker');
+
+
+
+    // put everything together
     table = `<table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0
     style='border-collapse:collapse'>
-        <tr style='height:20pt'> 
-            <td width=161 valign=top style='width:120.5pt;
-            padding:0cm 5.4pt 0cm 5.4pt;height:20pt'>
-            <p class=MsoNormal>${moment(day.startTime).format('ddd, MMM D')}</p>
-            </td>
-            <td width=268 valign=top style='width:201.1pt; padding:0cm 5.4pt 0cm 5.4pt;height:20pt'>
-                <p class=MsoNormal><i>Topic</i></p>
-            </td>
-            <td width=186 valign=top style='width:139.5pt; padding:0cm 5.4pt 0cm 5.4pt;height:20pt'>
-                <p class=MsoNormal><i>Speaker</i></p>
-            </td>
+        <tr style='height:20pt'>
+            ${tdDayHeader}
+            ${tdTopicHeader}
+            ${tdSpeakerHeader}
         </tr>
         ${table} 
     </table>`;
 
     return table;
+}
+
+
+/**
+ * Replaces the children of the first child with a text node child with the given html string.
+ * If there are no text child nodes, it continues searching in the first element.
+ */
+const replaceChildrenOfFirstNodeWithTextNode = (htmlString: string, newHtmlToInsert: string) => {
+    var el = document.createElement('tr');
+    el.innerHTML = htmlString;
+    let curEl = el.children[0];
+    while (curEl.hasChildNodes()) {
+        if (hasTextChild(curEl)) {
+            curEl.innerHTML = newHtmlToInsert;
+            return el.innerHTML;
+        }
+        curEl = curEl.children[0];
+    }
+}
+
+/**
+ * Check if the given el has a direct text node child.
+ * 
+ * @param el 
+ */
+const hasTextChild = (el: Element) => {
+    const textChild = Array.from(el.childNodes).find(child => {
+        return (child.nodeType === Node.TEXT_NODE || child.nodeName === 'b')
+            && child.textContent.replace(/(\r\n|\n|\r)/gm, "") !== "  " //check that the text node is not a line break
+    });
+    if (textChild !== undefined) return true;
+    return false;
+}
+
+
+//Initial Table Styling
+const getInitialDayHeaderTdStyle = (day: string) => {
+    return `<td width=161 valign=top style='width:120.5pt; padding:0cm 5.4pt 0cm 5.4pt;height:20pt'>${day}</td>`;
+}
+
+const getInitialTopicHeaderTdStyle = () => {
+    return `<td width=268 valign=top style='width:201.1pt; padding:0cm 5.4pt 0cm 5.4pt;height:20pt'>Topic</td>`;
+}
+
+const getInitialSpeakerHeaderTdStyle = () => {
+    return `<td width=186 valign=top style='width:139.5pt; padding:0cm 5.4pt 0cm 5.4pt;height:20pt'>Speaker</td>`;
+}
+
+const getInitialTimeTdStyle = (time: string) => {
+    return `<td width=160 valign=top style='width:120pt;border:none;border-bottom:solid #C9C9C9 1.0pt; padding:0cm 5.4pt 0cm 5.4pt;height:10.05pt'>${time}</td>`;
+}
+
+const getInitialTitleAndDescriptionTdStyle = (content: string) => {
+    return `<td width=268 valign=top style='width:200pt;border:none;border-bottom:solid #C9C9C9 1.0pt; padding:0cm 5.4pt 0cm 5.4pt;height:10.05pt'>${content}</td>`;
+}
+
+const getInitialSpeakerTdStyle = (speaker: string) => {
+    return `<td width=186 valign=top style='width:140pt;border:none;border-bottom:solid #C9C9C9 1.0pt; padding:0cm 5.4pt 0cm 5.4pt;height:10.05pt'>${speaker}</td>`
 }
