@@ -7,7 +7,7 @@ import { InitialScreen } from "../InitialScreen/InitialScreen";
 import uuid = require("uuid");
 import { IDayJSON } from "react-event-agenda/dist/models/DayModel";
 import { AddInAgenda } from "../AddInAgenda/AddInAgenda";
-import { replaceLast } from "../../util/stringUtil";
+import { replaceLast, numberToWord } from "../../util/stringUtil";
 import { getAsyncMailBody } from "../../util/officeMailboxHelpers";
 import { getTable } from "../../util/htmlGenerators";
 
@@ -29,7 +29,7 @@ export const AddIn: React.FC<IProps> = ({
 
     const checkForData = async () => {
         const result = await getAsyncMailBody();
-        const matches = /agendaData_start([\s\S]*)agendaData_end/.exec(result.value);
+        const matches = /agendaData_start([\s\S]*?)agendaData_end/.exec(result.value);
         if (matches && matches.length > 0) {
             let match = matches[0];
             match = match.replace(/(agendaData_end|agendaData_start)*/g, '');
@@ -130,8 +130,8 @@ export const AddIn: React.FC<IProps> = ({
                             id: uuid(),
                             start: dayStartTime.toString(),
                             end: moment(dayStartTime).add('minutes', 30).toString(),
-                            title: "Sample Topic",
-                            speaker: "Sample Speaker",
+                            title: i !== 0 ? `${numberToWord(i)} Sample Topic` : 'Sample Topic',
+                            speaker: i !== 0 ?  `${numberToWord(i)} Sample Speaker` : 'Sample Speaker',
                         }
                     ]
                 }
@@ -160,7 +160,7 @@ export const AddIn: React.FC<IProps> = ({
             // However you can style and format the table and its content to your liking.<br>
             // </span>
             `
-        <span lang=EN-US style='font-size:8.0pt;color:#b8b8b8'>***do not delete or edit after this line***</span><span lang=EN-US> </span>
+        <span lang=EN-US style='font-size:8.0pt;color:#b8b8b8'>***do not delete or edit after this line - you may format or apply styling to the tables***</span><span lang=EN-US> </span>
         <span style='display:none; font-size: 1pt; color: white;'>agendaData_start ${JSON.stringify(data)} agendaData_end</span>
         ${agendaEmailBody}
         <span lang=EN-US style='font-size:8.0pt;color:#b8b8b8'>***do not delete or edit before this line – this agenda has been built with the Agenda Builder Outlook Add-In***</span>`

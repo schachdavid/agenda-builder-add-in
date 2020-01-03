@@ -6,6 +6,7 @@ import { DeletedDaysWarning } from '../DeletedDaysWarning/DeletedDaysWarning';
 import moment = require("react-event-agenda/node_modules/moment");
 import * as styles from './AddInAgenda.module.css';
 import uuid = require("uuid");
+import { numberToWord } from "../../util/stringUtil";
 
 
 
@@ -49,7 +50,6 @@ export const AddInAgenda: React.FC<IProps> = ({
             for (let i = 0; i < numberToDelete && days.length - 1 - i > 0; i++) {
                 agendaViewModel.deleteDay(days[days.length - 1 - i].id);
             }
-            console.log(agendaViewModel.getDays());
             setDeletedDaysWarningHidden(false);
         } else if (newDiffDays > oldDiffDays) {
             //add days
@@ -64,7 +64,15 @@ export const AddInAgenda: React.FC<IProps> = ({
                     tracks: [{
                         id: uuid(),
                         name: "",
-                        items: []
+                        items: [
+                            {
+                                id: uuid(),
+                                start: day.toString(),
+                                end: moment(day).add('minutes', 30).toString(),
+                                title: `${numberToWord(oldDiffDays + i + 1)} Sample Topic`,
+                                speaker: `${numberToWord(oldDiffDays + i + 1)} Sample Speaker`,
+                            }
+                        ]
                     }
                     ]
                 });

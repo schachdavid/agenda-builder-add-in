@@ -44,7 +44,7 @@ export const InitialScreen: React.FC<IProps> = ({
                     </Collapsible>
                 </div>
                
-                <Collapsible item={{ name: "Load Agenda", collapsed: false }}>
+                <Collapsible item={{ name: "Open existing Agenda", collapsed: false }}>
                     <LoadAgenda checkForData={checkForData}/>
                 </Collapsible>
             </div>
