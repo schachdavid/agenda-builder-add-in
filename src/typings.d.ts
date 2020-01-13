@@ -1,3 +1,8 @@
+/**
+ * Custom User defined typings.
+*/
+
+
 declare module '*.css' {
     interface IClassNames {
       [className: string]: string

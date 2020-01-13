@@ -7,7 +7,6 @@ import moment = require("react-event-agenda/node_modules/moment");
 import * as styles from './AddInAgenda.module.css';
 import uuid = require("uuid");
 import { numberToWord } from "../../util/stringUtil";
-import type { ICustomItemAction } from "react-event-agenda/dist/interfaces/agendaProps";
 
 
 interface IProps {

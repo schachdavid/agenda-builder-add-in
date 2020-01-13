@@ -1,11 +1,9 @@
 import * as React from "react";
 import { AgendaViewModel } from "react-event-agenda";
-import * as styles from "./AddIn.module.css";
 import { IAgendaJSON, Agenda } from "react-event-agenda/dist/models/AgendaModel";
 import moment = require("react-event-agenda/node_modules/moment");
 import { InitialScreen } from "../InitialScreen/InitialScreen";
 import uuid = require("uuid");
-import { IDayJSON } from "react-event-agenda/dist/models/DayModel";
 import { AddInAgenda } from "../AddInAgenda/AddInAgenda";
 import { replaceLast, numberToWord } from "../../util/stringUtil";
 import { getAsyncMailBody } from "../../util/officeMailboxHelpers";

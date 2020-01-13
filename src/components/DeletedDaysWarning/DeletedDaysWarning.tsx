@@ -1,6 +1,5 @@
 import * as React from "react";
 import { MessageBarButton, MessageBar, MessageBarType } from 'office-ui-fabric-react';
-import * as styles from './DeletedDaysWarning.module.css';
 
 
 
@@ -19,7 +18,6 @@ export const DeletedDaysWarning: React.FC<IProps> = ({
 
     return (
         <MessageBar
-        className={styles.messageBar}
     messageBarType={MessageBarType.warning}
     isMultiline={false}
     onDismiss={hide}

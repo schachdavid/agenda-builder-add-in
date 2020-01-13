@@ -1,8 +1,6 @@
 import * as React from "react";
 import { initializeIcons } from '@uifabric/icons';
-import { IAgendaJSON } from "react-event-agenda/dist/models/AgendaModel";
 import { AddIn } from './AddIn/AddIn'
-import { InitialScreen } from "./InitialScreen/InitialScreen";
 import { Customizer } from 'office-ui-fabric-react';
 import { createTheme } from 'office-ui-fabric-react';
 import { palette } from "../colorPalette";
