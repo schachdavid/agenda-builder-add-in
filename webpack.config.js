@@ -12,7 +12,7 @@ module.exports = async (env, options) => {
     devtool: "source-map",
     entry: {
       vendor: ["react", "react-dom", "core-js"],
-      taskpane: ["react-hot-loader/patch", "./src/taskpane/index.tsx"],
+      taskpane: ["react-hot-loader/patch", "./src/index.tsx"],
     },
     resolve: {
       extensions: [".ts", ".tsx", ".html", ".js", ".css"],
@@ -27,7 +27,7 @@ module.exports = async (env, options) => {
         },
         {
           test: /\.css$/,
-          include: path.join(__dirname, 'src/taskpane/components'),
+          include: path.join(__dirname, 'src/components'),
           use: [
             'style-loader',
             {
@@ -38,20 +38,6 @@ module.exports = async (env, options) => {
               }
             },
             'postcss-loader'
-          ]
-        },
-        {
-          test: /\.css$/,
-          include: path.join(__dirname, 'src/dialog/components'),
-          use: [
-            'style-loader',
-            {
-              loader: 'typings-for-css-modules-loader',
-              options: {
-                modules: true,
-                namedExport: true
-              }
-            }
           ]
         },
         {
@@ -70,25 +56,20 @@ module.exports = async (env, options) => {
       new CopyWebpackPlugin([
         {
           to: "taskpane.css",
-          from: "./src/taskpane/taskpane.css"
+          from: "./src/taskpane.css"
         }
       ]),
       new CopyWebpackPlugin([
         {
           to: "normalize.css",
-          from: "./src/taskpane/normalize.css"
+          from: "./src/normalize.css"
         }
       ]),
-      new CopyWebpackPlugin([
-        {
-          to: "dialog.css",
-          from: "./src/dialog/dialog.css"
-        }
-      ]),
+
       new ExtractTextPlugin("[name].[hash].css"),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
-        template: "./src/taskpane/taskpane.html",
+        template: "./src/taskpane.html",
         chunks: ["taskpane", "vendor", "polyfills"]
       }),
       new CopyWebpackPlugin([

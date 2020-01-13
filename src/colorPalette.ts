@@ -1,3 +1,14 @@
+/**
+ * The Agenda Builder's theme.
+ *
+ * @file Color palette of the Agenda Builder's theme. Can be used as
+ * a fabric theme. Should also be used for custom components.
+ * 
+ * @license MIT
+ */
+
+
+
 import { IPalette } from "@uifabric/styling";
 
 export const palette: Partial<IPalette> = {

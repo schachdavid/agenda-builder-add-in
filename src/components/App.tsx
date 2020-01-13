@@ -37,8 +37,6 @@ export default class App extends React.Component<AppProps, AppState> {
         })
       }}>
         <div style={{ width: '100%' }}>
-          {/* Hello WOrld
-        <button onClick={() => Office.context.ui.displayDialogAsync('https://localhost:3000/dialog.html', { height: 90, width: 60, displayInIframe: false })}>open dialog</button> */}
           <AddIn></AddIn>
         </div>
       </Customizer>

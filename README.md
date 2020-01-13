@@ -3,7 +3,7 @@
 # Agenda Builder
 
 <p align="center">
-  <img src="screenshot.png" width="800">
+  <img src="readme_assets/screenshot.png" width="800">
 </p>
 
 ## Development

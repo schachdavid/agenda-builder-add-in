@@ -27,6 +27,9 @@ export const AddIn: React.FC<IProps> = ({
         checkForData();
     }, [])
 
+    /**
+     * Checks for agenda data in the email and initializes the add-in.
+     */
     const checkForData = async () => {
         const result = await getAsyncMailBody();
         const matches = /agendaData_start([\s\S]*?)agendaData_end/.exec(result.value);
@@ -46,15 +49,19 @@ export const AddIn: React.FC<IProps> = ({
 
 
 
+    /**
+     * Replaces the data which is a hidden JSON String and
+     * the Table inside the HTML E-Mail.
+     * 
+     * @param {IAgendaJSON} data
+     */
     const handleDataChange = async (data: IAgendaJSON) => {
         const result = await getAsyncMailBody();
         let newItemBody = result.value;
         const newDataString = 'agendaData_start' + JSON.stringify(data) + 'agendaData_end';
         newItemBody = newItemBody.replace(/agendaData_start([\s\S]*)agendaData_end/, newDataString)
-
         //create new tables
         const tables = data.days.map(day => getTable(day, result.value))
-
         //replace old
         var el = document.createElement('html');
         el.innerHTML = newItemBody;
@@ -70,7 +77,6 @@ export const AddIn: React.FC<IProps> = ({
                 else tableElement.parentElement.removeChild(tableElement);
             }
         })
-
         // case new days were added, add tables
         if (tables.length > 0) {
             while (tables.length > 0) {
@@ -85,13 +91,13 @@ export const AddIn: React.FC<IProps> = ({
                     }
                 }
                 if (lastTable) {
-                    lastTable.insertAdjacentHTML('afterend', tables.shift());
+                    lastTable.insertAdjacentHTML('afterend', `<br>${tables.shift()}`);
                 }
             }
         }
-
         //remove added line break
         el.innerHTML = replaceLast('<p class="MsoNormal">&nbsp;</p>', '', el.innerHTML);
+        console.log(el.innerHTML);
         Office.context.mailbox.item.body.setAsync(
             el.innerHTML,
             {
@@ -101,7 +107,17 @@ export const AddIn: React.FC<IProps> = ({
         );
     };
 
-    const initializeAgenda = (startDate: Date, endDate: Date) => {
+    /**
+     * Initializes the AgendaViewModel. Inserts the initial hidden 
+     * json data and table of the agenda into the E-Mail at the 
+     * last cursor position.
+     * 
+     * @param {Date} startDate - the agenda's start date
+     * @param {Date} endDate - the agenda's end date
+     * @param {boolean} showInstructions - if there should be added instructions 
+     * on the add-ins usage
+     */
+    const initializeAgenda = (startDate: Date, endDate: Date, showInstructions: boolean) => {
         const data: IAgendaJSON = {
             id: uuid(),
             days: []
@@ -131,7 +147,7 @@ export const AddIn: React.FC<IProps> = ({
                             start: dayStartTime.toString(),
                             end: moment(dayStartTime).add('minutes', 30).toString(),
                             title: i !== 0 ? `${numberToWord(i)} Sample Topic` : 'Sample Topic',
-                            speaker: i !== 0 ?  `${numberToWord(i)} Sample Speaker` : 'Sample Speaker',
+                            speaker: i !== 0 ? `${numberToWord(i)} Sample Speaker` : 'Sample Speaker',
                         }
                     ]
                 }
@@ -152,14 +168,14 @@ export const AddIn: React.FC<IProps> = ({
             <br/>
             ${getTable(days[i])}`;
         }
-        agendaEmailBody =
-            // <span lang=EN-US style='font-size:11.0pt;color:#b8b8b8'>
-            // 👋 Hi there, you just created an agenda<br>
-            // The changes you are making using the Agenda Builder are reflected in the table below immediately and will be auto saved into this email.<br>
-            // Do not try to edit the table's content directly.<br>
-            // However you can style and format the table and its content to your liking.<br>
-            // </span>
-            `
+        agendaEmailBody = `
+        ${showInstructions ? `<span lang=EN-US style='font-size:11.0pt;color:#026367'>
+        👋 Hi there, you have just created an agenda<br>
+        The changes you are making by using the Agenda Builder are reflected in the table below immediately and will be auto saved into this email.<br>
+        Do not try to edit the table's content directly.<br>
+        However you may style and format the table and its content to your liking.<br>
+        </span>
+        <br>` : ''}
         <span lang=EN-US style='font-size:8.0pt;color:#b8b8b8'>***do not delete or edit after this line - you may format or apply styling to the tables***</span><span lang=EN-US> </span>
         <span style='display:none; font-size: 1pt; color: white;'>agendaData_start ${JSON.stringify(data)} agendaData_end</span>
         ${agendaEmailBody}

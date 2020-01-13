@@ -1,3 +1,12 @@
+/**
+ * HTML Generator for IDayJSON -> HTML Table.
+ *
+ * @file This files exports the getTable function which is
+ *  used to generate a table for a given day of an agenda.
+ * @license MIT
+ */
+
+
 import moment = require("react-event-agenda/node_modules/moment");
 import { IDayJSON } from "react-event-agenda/dist/models/DayModel";
 
@@ -22,8 +31,8 @@ export const getTable = (dayData: IDayJSON, oldBody?: string): string => {
     //generate table rows
     dayData.tracks[0].items.forEach(item => {
         const time = `${moment(item.start).format("HH:mm")} - ${moment(item.end).format("HH:mm")}`;
-        const titleAndDescription = `<b>${item.title ? item.title : ' '}</b>${item.description ? `<br/>${item.description}` : ' '}`;
-        const speaker = item.speaker ? item.speaker : ' ';
+        const titleAndDescription = `<b>${item.title ? item.title : ' '}</b>${item.description ? `<br/>${item.description}` : '&nbsp;'}`;
+        const speaker = item.speaker ? item.speaker : '&nbsp;';
         //create table data cells
         const tdTime = !oldBody ? getInitialTimeTdStyle(time) : replaceChildrenOfFirstNodeWithTextNode(tableCells[3] ? tableCells[3] : tableCells[0], time);
         const tdTopic = !oldBody ? getInitialTitleAndDescriptionTdStyle(titleAndDescription) : replaceChildrenOfFirstNodeWithTextNode(tableCells[4] ? tableCells[4] : tableCells[1], titleAndDescription);
@@ -57,15 +66,19 @@ export const getTable = (dayData: IDayJSON, oldBody?: string): string => {
 }
 
 
+
 /**
  * Replaces the children of the first child with a text node child with the given html string.
  * Deletes all siblings of the first child with a text node child.
+ * 
+ * @param {string} htmlString - the whole HTML string
+ * @param {string} newHtmlToInsert - HTML to insert instead of the first child with a text node child 
+ * @returns {string}  the new HTML String
  */
 const replaceChildrenOfFirstNodeWithTextNode = (htmlString: string, newHtmlToInsert: string) => {
     var el = document.createElement('tr');
     el.innerHTML = htmlString;
     let curEl = el.children[0];
-    // const newHtmlHasFormatting = newHtmlToInsert.includes('<b>') || newHtmlToInsert.includes('<i>') || newHtmlToInsert.includes('<u>');
     while (curEl.hasChildNodes()) {
         if(curEl.tagName === 'B' || curEl.tagName === 'I' || curEl.tagName === 'U' ) {
             const curElParent = curEl.parentElement;
@@ -92,7 +105,7 @@ const replaceChildrenOfFirstNodeWithTextNode = (htmlString: string, newHtmlToIns
 /**
  * Check if the given el has a direct text node child.
  * 
- * @param el 
+ * @param {Element} el 
  */
 const hasTextChild = (el: Element) => {
     const textChild = Array.from(el.childNodes).find(child => {

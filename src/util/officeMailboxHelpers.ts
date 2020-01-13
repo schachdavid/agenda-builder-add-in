@@ -1,3 +1,12 @@
+/**
+ * Collection of helper functions to use the JS Office API.
+ *
+ * @file This files exports function which are simplifying the
+ * interaction between the Agenda Builder and the JS Office Mailbox API.
+ * @license MIT
+ */
+
+
 
 /**
  *  Calls Office.context.mailbox.item.body.getAsync to get the result and returns

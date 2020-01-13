@@ -6,6 +6,7 @@
         "url": "https://github.com/OfficeDev/Office-Addin-TaskPane-React.git"
     },
     "license": "MIT",
+    "author": "David Schach",
     "config": {
         "app-to-debug": "outlook",
         "app-type-to-debug": "desktop",

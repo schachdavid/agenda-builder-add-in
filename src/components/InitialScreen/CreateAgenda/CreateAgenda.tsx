@@ -10,7 +10,7 @@ import { DateRangePicker } from "../../RangePicker/DateRangePicker";
 
 
 interface IProps {
-    initializeAgenda: (startDate: Date, endDate: Date) => void
+    initializeAgenda: (startDate: Date, endDate: Date, showInstructions: boolean) => void
 }
 
 export const CreateAgenda: React.FC<IProps> = ({ initializeAgenda }: IProps) => {
@@ -40,7 +40,7 @@ export const CreateAgenda: React.FC<IProps> = ({ initializeAgenda }: IProps) => 
             checked={showInstructions} 
             onChange={() => setShowInstructions(!showInstructions)} />
 
-            <PrimaryButton disabled={!rangeIsValid} text="Create Agenda" onClick={() => initializeAgenda(startDate, endDate)} className={styles.button} />
+            <PrimaryButton disabled={!rangeIsValid} text="Create Agenda" onClick={() => initializeAgenda(startDate, endDate, showInstructions)} className={styles.button} />
 
         </>
     )

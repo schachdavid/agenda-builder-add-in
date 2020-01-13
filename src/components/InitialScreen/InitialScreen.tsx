@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as styles from './InitialScreen.module.css';
 import { Collapsible } from "./Collapsible/Collapsible";
-const logo = require("../../../../assets/logo-filled.png")
+const logo = require("../../../assets/logo-filled.png")
 
 import { CreateAgenda } from './CreateAgenda/CreateAgenda'
 import { LoadAgenda } from "./LoadAgenda/LoadAgenda";
@@ -11,7 +11,7 @@ import { LoadAgenda } from "./LoadAgenda/LoadAgenda";
 
 
 interface IProps {
-    initializeAgenda: (startDate: Date, endDate: Date) => void,
+    initializeAgenda: (startDate: Date, endDate: Date, showInstructions: boolean) => void,
     checkForData: () => void
 }
 

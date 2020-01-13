@@ -1,5 +1,5 @@
 import * as React from "react";
-import Agenda, { AgendaViewModel } from 'react-event-agenda'
+import Agenda, { AgendaViewModel, IItem } from 'react-event-agenda'
 import { SettingsDialog } from "../SettingsDialog/SettingsDialog";
 import { ICommandBarItemProps } from "office-ui-fabric-react/lib/CommandBar";
 import { DeletedDaysWarning } from '../DeletedDaysWarning/DeletedDaysWarning';
@@ -7,9 +7,7 @@ import moment = require("react-event-agenda/node_modules/moment");
 import * as styles from './AddInAgenda.module.css';
 import uuid = require("uuid");
 import { numberToWord } from "../../util/stringUtil";
-
-
-
+import type { ICustomItemAction } from "react-event-agenda/dist/interfaces/agendaProps";
 
 
 interface IProps {
@@ -22,20 +20,12 @@ export const AddInAgenda: React.FC<IProps> = ({
     const [settingsHidden, setSettingsHidden] = React.useState(true);
     const [deletedDaysWarningHidden, setDeletedDaysWarningHidden] = React.useState(true);
 
-
-    const customAgendaActionsFar: ICommandBarItemProps[] = [
-        {
-            key: 'settings',
-            ariaLabel: 'settings',
-            iconProps: {
-                iconName: 'Settings'
-            },
-            iconOnly: true,
-            onClick: () => setSettingsHidden(false)
-        }
-    ];
-
-
+    /**
+     * Saves the modals settings.
+     * 
+     * @param {Date} newStartDate 
+     * @param {Date} newEndDate 
+     */
     const saveSettings = (newStartDate: Date, newEndDate: Date) => {
         const days = agendaViewModel.getDays();
         const momentOldStart = moment(days[0].startTime);
@@ -82,20 +72,39 @@ export const AddInAgenda: React.FC<IProps> = ({
         const startDateDiffDays = Math.ceil(momentNewStart.diff(momentOldStart, 'days', true));
         if (startDateDiffDays !== 0) agendaViewModel.addDaysToAllDates(startDateDiffDays);
         agendaViewModel.pushToHistory();
+        agendaViewModel.applyTotalTrackWidthToTrackVisibility();
     }
 
+    /**
+     * @returns {Date} current start date of the agenda.
+     */
     const getStartDate = () => {
         const days = agendaViewModel.getDays();
         return days[0].startTime.toDate()
     }
 
 
-
+    /**
+     * @returns {Date} current end date of the agenda.
+     */
     const getEndDate = () => {
         const days = agendaViewModel.getDays();
         return days[days.length - 1].startTime.toDate()
     }
 
+    const customAgendaActionsFar: ICommandBarItemProps[] = [
+        {
+            key: 'settings',
+            ariaLabel: 'settings',
+            iconProps: {
+                iconName: 'Settings'
+            },
+            iconOnly: true,
+            onClick: () => setSettingsHidden(false)
+        }
+    ];
+
+   
 
     return (
         <div className={styles.container}>

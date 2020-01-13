@@ -1,3 +1,11 @@
+/**
+ * Collection of utility functions to work with JS string.
+ *
+ * @file This files exports functions which can be reused in 
+ * the Agenda Builders react components to work with JS strings.
+ * @license MIT
+ */
+
 
 /**
  * Replaces the last occurrence of the given string
