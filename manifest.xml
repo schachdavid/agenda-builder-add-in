@@ -11,7 +11,7 @@
   <Description DefaultValue="Development Version"/>
   <IconUrl DefaultValue="https://localhost:3000/assets/logo-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/logo-80.png"/>
-  <SupportUrl DefaultValue="github.com/schachdavid/agenda-builder-add-in"/>
+  <SupportUrl DefaultValue="https://github.com/schachdavid/agenda-builder-add-in"/>
   <AppDomains>
     <AppDomain>github.com/schachdavid/agenda-builder-add-in</AppDomain>
   </AppDomains>

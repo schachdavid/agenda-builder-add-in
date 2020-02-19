@@ -95,7 +95,6 @@ export const AddIn: React.FC<IProps> = ({
         }
         //remove added line break
         el.innerHTML = replaceLast('<p class="MsoNormal">&nbsp;</p>', '', el.innerHTML);
-        console.log(el.innerHTML);
         Office.context.mailbox.item.body.setAsync(
             el.innerHTML,
             {

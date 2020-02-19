@@ -108,13 +108,11 @@ export const AddInAgenda: React.FC<IProps> = ({
     return (
         <div className={styles.container}>
             {deletedDaysWarningHidden ? null :
-                <div className={styles.message}>
                     <DeletedDaysWarning hide={() => setDeletedDaysWarningHidden(true)}
                         undo={() => {
                             agendaViewModel.undo();
                             setDeletedDaysWarningHidden(true)
                         }} />
-                </div>
             }
             <div className={styles.agendaContainer}>
                 <Agenda
